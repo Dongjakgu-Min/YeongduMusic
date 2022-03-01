@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, TouchableOpacity, FlatList, StyleSheet} from 'react-native';
+import {View, FlatList} from 'react-native';
 
 import ReactNativeBlobUtil, {
   ReactNativeBlobUtilStat,
 } from 'react-native-blob-util';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import ListItem from '../components/ListItem';
 
 const FileScreen = () => {
   const [fileList, setFileList] = useState<ReactNativeBlobUtilStat[]>([]);
@@ -45,39 +45,12 @@ const FileScreen = () => {
     fetch();
   }, [dirPath]);
 
-  const ListItem = ({
-    filename,
-    path,
-    type,
-    data,
-  }: {
-    filename: string;
-    path: string;
-    type: string;
-    data: ReactNativeBlobUtilStat;
-  }) => {
-    return (
-      <TouchableOpacity
-        style={styles.Container}
-        onPress={() => {
-          if (dirPath[dirPath.length - 1].path.length > path.length) {
-            setDirPath(dirPath.slice(0, dirPath.length - 1));
-          } else if (type === 'directory') {
-            setDirPath([...dirPath, data]);
-          }
-        }}>
-        <View style={styles.IconContainer}>
-          <Icon
-            name={type === 'directory' ? 'folder' : 'music-note'}
-            size={25}
-          />
-        </View>
-        <View style={styles.TextContainer}>
-          <Text>{filename}</Text>
-          <Text>{path}</Text>
-        </View>
-      </TouchableOpacity>
-    );
+  const onPress = (data: ReactNativeBlobUtilStat) => {
+    if (dirPath[dirPath.length - 1].path.length > data.path.length) {
+      setDirPath(dirPath.slice(0, dirPath.length - 1));
+    } else if (data.type === 'directory') {
+      setDirPath([...dirPath, data]);
+    }
   };
 
   return (
@@ -89,28 +62,12 @@ const FileScreen = () => {
             filename={data.item.filename}
             path={data.item.path}
             type={data.item.type}
-            data={data.item}
+            onPress={() => onPress(data.item)}
           />
         )}
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  Container: {
-    flex: 1,
-    flexDirection: 'row',
-    padding: 10,
-  },
-  TextContainer: {
-    flex: 1,
-    flexDirection: 'column',
-    paddingLeft: 10,
-  },
-  IconContainer: {
-    justifyContent: 'center',
-  },
-});
 
 export default FileScreen;

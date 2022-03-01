@@ -1,9 +1,10 @@
 import React, {useEffect, useState} from 'react';
-import {View, FlatList, ScrollView, Text} from 'react-native';
+import {View, FlatList} from 'react-native';
 import * as mime from 'react-native-mime-types';
 import ReactNativeBlobUtil, {
   ReactNativeBlobUtilStat,
 } from 'react-native-blob-util';
+import ListItem from '../components/ListItem';
 
 const MusicListScreen = () => {
   const [music, setMusic] = useState<ReactNativeBlobUtilStat[]>([]);
@@ -12,41 +13,50 @@ const MusicListScreen = () => {
     const findMusic = async (path: string) => {
       const dirs = await ReactNativeBlobUtil.fs.lstat(path);
       const directories = dirs.filter(res => res.type === 'directory');
-      const files = dirs.filter(res => {
+
+      let files = dirs.filter(res => {
         return (
           res.type === 'file' &&
           mime.lookup(res.filename).toString().split('/')[0] === 'audio'
         );
       });
 
-      setMusic([...music, ...files]);
-      console.log(files);
-
-      directories.map(dir => {
+      for (let dir of directories) {
         if (
-          dir.path !==
-            ReactNativeBlobUtil.fs.dirs.SDCardDir.split('/data')[0] &&
-          dir.path !==
+          ![
+            ReactNativeBlobUtil.fs.dirs.SDCardDir.split('/data')[0],
             ReactNativeBlobUtil.fs.dirs.SDCardDir.split('/Android')[0].concat(
               '/log',
-            )
+            ),
+          ].includes(dir.path)
         ) {
-          findMusic(dir.path);
+          const items = await findMusic(dir.path);
+          files = files.concat(items);
         }
-      });
+      }
+
+      return files;
     };
 
     findMusic(ReactNativeBlobUtil.fs.dirs.SDCardDir.split('/Android')[0]).then(
-      res => console.log(music),
+      res => setMusic(res),
     );
   }, []);
 
   return (
-    <ScrollView>
-      {music.map(file => {
-        return <Text>{file.filename}</Text>;
-      })}
-    </ScrollView>
+    <View>
+      <FlatList
+        data={music}
+        renderItem={data => (
+          <ListItem
+            filename={data.item.filename}
+            path={data.item.path}
+            type={data.item.type}
+            onPress={() => {}}
+          />
+        )}
+      />
+    </View>
   );
 };
 
