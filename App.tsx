@@ -8,35 +8,41 @@
  * @format
  */
 
-import React from 'react';
-import {
-  PermissionsAndroid,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
-
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import React, {useEffect} from 'react';
+import {PermissionsAndroid, useColorScheme, StatusBar} from 'react-native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import {
   DarkTheme,
   DefaultTheme,
   NavigationContainer,
 } from '@react-navigation/native';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-import FileScreen from './screens/FileScreen';
-import MusicListScreen from './screens/MusicListScreen';
+import TrackPlayer, {Capability} from 'react-native-track-player';
+
+import {RootStackParamList} from './types/navigation';
+import Main from './src/screens/MainScreen';
+import MusicPlayer from './src/screens/MusicPlayerScreen';
+
+const audioSetup = async () => {
+  const currentTrack = await TrackPlayer.getCurrentTrack();
+  if (currentTrack !== null) {
+    return;
+  }
+
+  await TrackPlayer.setupPlayer({});
+  await TrackPlayer.updateOptions({
+    stopWithApp: false,
+    capabilities: [
+      Capability.Play,
+      Capability.Pause,
+      Capability.SkipToNext,
+      Capability.SkipToPrevious,
+      Capability.Stop,
+    ],
+    compactCapabilities: [Capability.Play, Capability.Pause],
+  });
+};
 
 const requestPermission = async () => {
   const granted = await PermissionsAndroid.requestMultiple([
@@ -57,40 +63,34 @@ const requestPermission = async () => {
 const App = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const Stack = createNativeStackNavigator<RootStackParamList>();
 
-  const Tab = createBottomTabNavigator();
-  requestPermission();
+  useEffect(() => {
+    requestPermission();
+    audioSetup();
+  });
 
   return (
     <NavigationContainer theme={isDarkMode ? DarkTheme : DefaultTheme}>
-      <Tab.Navigator>
-        <Tab.Screen name="파일" component={FileScreen} />
-        <Tab.Screen name="음악" component={MusicListScreen} />
-      </Tab.Navigator>
+      <StatusBar
+        translucent
+        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+        backgroundColor="transparent"
+      />
+      <Stack.Navigator>
+        <Stack.Screen
+          options={{headerShown: false}}
+          name="Main"
+          component={Main}
+        />
+        <Stack.Screen
+          options={{headerShown: false}}
+          name="MusicPlayer"
+          component={MusicPlayer}
+        />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
-// const styles = StyleSheet.create({
-//   sectionContainer: {
-//     marginTop: 32,
-//     paddingHorizontal: 24,
-//   },
-//   sectionTitle: {
-//     fontSize: 24,
-//     fontWeight: '600',
-//   },
-//   sectionDescription: {
-//     marginTop: 8,
-//     fontSize: 18,
-//     fontWeight: '400',
-//   },
-//   highlight: {
-//     fontWeight: '700',
-//   },
-// });
 
 export default App;
