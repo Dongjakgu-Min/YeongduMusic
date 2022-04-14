@@ -1,0 +1,33 @@
+declare module 'react-native-get-music-files' {
+  const RNAndroidAudioStore = {
+    getAll(options: {
+      blured: boolean;
+      artist: boolean;
+      duration: boolean;
+      title: boolean;
+      id?: boolean;
+      coverFolder?: string;
+      cover: boolean;
+      coverResizeRatio?: number;
+      icon?: boolean;
+      iconSize?: number;
+      coverSize?: number;
+      genre: boolean;
+      album?: boolean;
+      batchNumber?: number;
+      minimumSongDuration: number;
+      delay?: number;
+    }): Promise<
+      {
+        icon: string;
+        title: string;
+        author: string;
+        album: string;
+        duration: string;
+        url: string;
+        fileName: string;
+        cover: string;
+      }[]
+    >;,
+  };
+}

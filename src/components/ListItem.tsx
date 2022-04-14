@@ -6,12 +6,12 @@ import {useTheme} from '@react-navigation/native';
 const ListItem = ({
   filename,
   path,
-  type,
+  isFile,
   onPress,
 }: {
   filename: string;
   path: string;
-  type: string;
+  isFile: () => boolean;
   onPress: () => void;
 }) => {
   const {colors} = useTheme();
@@ -21,7 +21,7 @@ const ListItem = ({
       <View style={styles.IconContainer}>
         <Icon
           style={{color: colors.text}}
-          name={type === 'directory' ? 'folder' : 'music-note'}
+          name={isFile() ? 'music-note' : 'folder'}
           size={25}
         />
       </View>

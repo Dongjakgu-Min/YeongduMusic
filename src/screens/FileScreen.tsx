@@ -1,71 +1,68 @@
 import React, {useEffect, useState} from 'react';
 import {View, FlatList} from 'react-native';
-import {useTheme} from '@react-navigation/native';
-
-import ReactNativeBlobUtil, {
-  ReactNativeBlobUtilStat,
-} from 'react-native-blob-util';
+import RNFS, {ReadDirItem} from 'react-native-fs';
 
 import ListItem from '../components/ListItem';
+import {readDir} from '../util/file';
 
 const FileScreen = () => {
-  const [fileList, setFileList] = useState<ReactNativeBlobUtilStat[]>([]);
-  const [dirPath, setDirPath] = useState<ReactNativeBlobUtilStat[]>([]);
-
-  const {colors} = useTheme();
+  const [dirPath, setDirPath] = useState<ReadDirItem[]>([]);
+  const [path, setPath] = useState<ReadDirItem[]>([]); // Stack으로 기록 저장
 
   useEffect(() => {
     const fetch = async () => {
-      dirPath.length === 0 &&
-        setDirPath([
-          await ReactNativeBlobUtil.fs.stat(
-            ReactNativeBlobUtil.fs.dirs.SDCardDir.split('/Android')[0],
-          ),
-        ]);
-
       if (dirPath.length === 0) {
-        return;
+        const stat = await RNFS.stat(RNFS.ExternalStorageDirectoryPath);
+        stat.name = '...';
+        setPath([stat as unknown as ReadDirItem]);
       }
-
-      const recentDir = dirPath[dirPath.length - 1];
-      recentDir.filename = '...';
-
-      const result = await ReactNativeBlobUtil.fs.lstat(recentDir.path);
-
-      const array = result.sort(function (a, b) {
-        if (a.type === 'directory' && b.type === 'file') return -1;
-        if (a.type === 'file' && b.type === 'directory') return 1;
-        if (a.filename < b.filename) return -1;
-        if (a.filename > b.filename) return 1;
-        return 0;
-      });
-
-      recentDir.path !==
-      ReactNativeBlobUtil.fs.dirs.SDCardDir.split('/Android')[0]
-        ? setFileList([dirPath[dirPath.length - 2], ...array])
-        : setFileList(array);
     };
 
     fetch();
   }, [dirPath]);
 
-  const onPress = (data: ReactNativeBlobUtilStat) => {
-    if (dirPath[dirPath.length - 1].path.length > data.path.length) {
-      setDirPath(dirPath.slice(0, dirPath.length - 1));
-    } else if (data.type === 'directory') {
-      setDirPath([...dirPath, data]);
+  useEffect(() => {
+    const fetch = async () => {
+      const result = await readDir(path[path.length - 1]?.path!, false);
+      const recentDir = path.length > 1 ? [path[path.length - 2]] : [];
+
+      setDirPath([
+        ...recentDir,
+        ...result.sort(function (a, b) {
+          if (a.isDirectory() && b.isFile()) return -1;
+          if (a.isFile() && b.isDirectory()) return 1;
+          if (a.name < b.name) return -1;
+          if (a.name > b.name) return 1;
+          return 0;
+        }),
+      ]);
+    };
+
+    fetch();
+  }, [path]);
+
+  const onPress = (data: ReadDirItem) => {
+    // const idx = path.length > 1 ? path.length - 2 : path.length - 1;
+
+    console.log(path);
+
+    // 상위 디렉터리로 간다면 마지막 최근 디렉터리는 필요 없음
+    if (data.name === '...') {
+      setPath(path.slice(0, path.length - 1));
+    } else if (data.isDirectory()) {
+      setPath([...path, {...data, name: '...'}]);
     }
   };
 
   return (
     <View>
       <FlatList
-        data={fileList}
+        data={dirPath}
         renderItem={data => (
           <ListItem
-            filename={data.item.filename}
+            filename={data.item.name}
             path={data.item.path}
-            type={data.item.type}
+            isFile={() => data.item.isFile()}
             onPress={() => onPress(data.item)}
           />
         )}

@@ -1,0 +1,12 @@
+declare module 'react-native-music-metadata' {
+  function getMetadata(uris: string[]): Promise<
+    {
+      albumArtist: string;
+      albumName: string;
+      artist: string;
+      title: string;
+      uri: string;
+      duration: number;
+    }[]
+  >;
+}

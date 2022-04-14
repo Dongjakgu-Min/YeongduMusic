@@ -12,6 +12,8 @@ target 'YeongduMusic' do
     :hermes_enabled => false
   )
 
+  pod 'RNSoundPlayer', :path => '../node_modules/react-native-sound-player'
+
   target 'YeongduMusicTests' do
     inherit! :complete
     # Pods for testing
