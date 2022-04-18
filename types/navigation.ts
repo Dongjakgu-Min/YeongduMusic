@@ -4,6 +4,7 @@ export type RootStackParamList = {
   MusicPlayer: {path: string};
   MusicList: undefined;
   FileList: undefined;
+  Setting: undefined;
   Main: undefined;
 };
 

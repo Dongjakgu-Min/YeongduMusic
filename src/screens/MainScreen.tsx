@@ -5,6 +5,7 @@ import {RootStackParamList} from '../../types/navigation';
 
 import FileScreen from './FileScreen';
 import MusicListScreen from './MusicListScreen';
+import SettingScreen from './SettingScreen';
 
 const Main = () => {
   const Tab = createBottomTabNavigator<RootStackParamList>();
@@ -20,6 +21,11 @@ const Main = () => {
         name="MusicList"
         component={MusicListScreen}
         options={{tabBarLabel: '음악'}}
+      />
+      <Tab.Screen
+        name="Setting"
+        component={SettingScreen}
+        options={{tabBarLabel: '설정'}}
       />
     </Tab.Navigator>
   );

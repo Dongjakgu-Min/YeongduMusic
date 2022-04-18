@@ -52,7 +52,6 @@ const MusicListScreen = ({navigation}: MusicListNavigationProp) => {
             path={data.item.path}
             isFile={() => data.item.isFile()}
             onPress={() => {
-              console.log('으아아아');
               navigation.navigate('MusicPlayer', {path: data.item.path});
             }}
           />
