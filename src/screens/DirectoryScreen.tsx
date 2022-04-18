@@ -1,20 +1,22 @@
 import React from 'react';
-import {StyleSheet, View, Text} from 'react-native';
+import {View, Text} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
+import {useSelector} from 'react-redux';
+import {DirectoryNavigationProp} from '../../types/navigation';
 
-const DirectoryScreen = () => {
+const DirectoryScreen = ({navigation}: DirectoryNavigationProp) => {
+  const reduxState = useSelector(
+    (state: {reducer: {directory: string[]}}) => state,
+  );
+
   return (
     <View>
       <FlatList
-        data={[{link: '추가하기...'}]}
-        renderItem={({item}) => <Text>{item.link}</Text>}
+        data={reduxState.reducer.directory}
+        renderItem={({item}) => <Text>{item}</Text>}
       />
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  
-});
 
 export default DirectoryScreen;

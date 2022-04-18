@@ -6,6 +6,7 @@ export type RootStackParamList = {
   FileList: undefined;
   Setting: undefined;
   Main: undefined;
+  Directory: undefined;
 };
 
 export type MusicPlayerNavigationProp = NativeStackScreenProps<
@@ -21,4 +22,14 @@ export type FileListNavigationProp = NativeStackScreenProps<
 export type MusicListNavigationProp = NativeStackScreenProps<
   RootStackParamList,
   'MusicList'
+>;
+
+export type SettingNavigationProp = NativeStackScreenProps<
+  RootStackParamList,
+  'Setting'
+>;
+
+export type DirectoryNavigationProp = NativeStackScreenProps<
+  RootStackParamList,
+  'Directory'
 >;

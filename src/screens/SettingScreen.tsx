@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
-import {StyleSheet, View, Text, FlatList} from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import React from 'react';
+import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {SettingNavigationProp} from '../../types/navigation';
 
 const styles = StyleSheet.create({
   item: {
@@ -10,13 +10,27 @@ const styles = StyleSheet.create({
   },
 });
 
-const SettingScreen = () => {
+const SettingScreen = ({navigation}: SettingNavigationProp) => {
   return (
     <View>
-      <FlatList
-        data={[{key: '음악 디렉토리 설정'}, {key: '정보'}]}
-        renderItem={({item}) => <Text style={styles.item}>{item.key}</Text>}
-      />
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => {
+          navigation.navigate('Directory');
+        }}>
+        <View>
+          <Text>디렉토리 설정</Text>
+        </View>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => {
+          navigation.navigate('Directory');
+        }}>
+        <View>
+          <Text>정보</Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };

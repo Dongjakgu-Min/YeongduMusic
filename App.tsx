@@ -18,11 +18,15 @@ import {
   NavigationContainer,
 } from '@react-navigation/native';
 
+import {Provider as StoreProvider} from 'react-redux';
+import store from './src/redux';
+
 import TrackPlayer, {Capability} from 'react-native-track-player';
 
 import {RootStackParamList} from './types/navigation';
 import Main from './src/screens/MainScreen';
 import MusicPlayer from './src/screens/MusicPlayerScreen';
+import Directory from './src/screens/DirectoryScreen';
 
 const audioSetup = async () => {
   const currentTrack = await TrackPlayer.getCurrentTrack();
@@ -71,25 +75,32 @@ const App = () => {
   });
 
   return (
-    <NavigationContainer theme={isDarkMode ? DarkTheme : DefaultTheme}>
-      <StatusBar
-        translucent
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor="transparent"
-      />
-      <Stack.Navigator>
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="Main"
-          component={Main}
+    <StoreProvider store={store}>
+      <NavigationContainer theme={isDarkMode ? DarkTheme : DefaultTheme}>
+        <StatusBar
+          translucent
+          barStyle={isDarkMode ? 'light-content' : 'dark-content'}
+          backgroundColor="transparent"
         />
-        <Stack.Screen
-          options={{headerShown: false}}
-          name="MusicPlayer"
-          component={MusicPlayer}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Main"
+            component={Main}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="MusicPlayer"
+            component={MusicPlayer}
+          />
+          <Stack.Screen
+            options={{headerShown: false}}
+            name="Directory"
+            component={Directory}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </StoreProvider>
   );
 };
 

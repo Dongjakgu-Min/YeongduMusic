@@ -24,6 +24,6 @@ export function reducer(state: AppState = initialState, action: DirAction) {
         }),
       };
     default:
-      return;
+      return state;
   }
 }

@@ -16,13 +16,11 @@ import {Metadata} from '../../types/object';
 
 import TextTicker from 'react-native-text-ticker';
 import ImageColors from 'react-native-image-colors';
-import TrackPlayer, {State} from 'react-native-track-player';
 import SoundPlayer from 'react-native-sound-player';
 
 const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
   const [metadata, setMetadata] = useState<Metadata>();
   const [background, setBackground] = useState<string>();
-  const [playState, setPlayState] = useState<boolean>();
   const {colors} = useTheme();
 
   const isDark = useColorScheme() === 'dark';
