@@ -11,7 +11,7 @@ const MusicListScreen = ({navigation}: MusicListNavigationProp) => {
   const [music, setMusic] = useState<ReadDirItem[]>([]);
 
   const reduxState = useSelector(
-    (state: {reducer: {directory: string[]}}) => state,
+    (state: {reducer: {directory: string[]; isPlaying: boolean}}) => state,
   );
 
   useEffect(() => {

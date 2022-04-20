@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {
   View,
   Image,
+  ImageBackground,
   StyleSheet,
   Dimensions,
   useColorScheme,
@@ -14,13 +15,21 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {MusicPlayerNavigationProp} from '../../types/navigation';
 import {Metadata} from '../../types/object';
 
+import TrackPlayer, {useProgress, Event} from 'react-native-track-player';
 import TextTicker from 'react-native-text-ticker';
 import ImageColors from 'react-native-image-colors';
 import SoundPlayer from 'react-native-sound-player';
+import {useDispatch, useSelector} from 'react-redux';
+import {playMusic, stopMusic} from '../redux/action';
 
 const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
   const [metadata, setMetadata] = useState<Metadata>();
   const [background, setBackground] = useState<string>();
+  const {position, buffered, duration} = useProgress();
+  const reduxState = useSelector(
+    (state: {reducer: {directory: string[]; isPlaying: boolean}}) => state,
+  );
+  const dispatch = useDispatch();
   const {colors} = useTheme();
 
   const isDark = useColorScheme() === 'dark';
@@ -45,82 +54,96 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
     SoundPlayer.loadUrl(route.params.path);
   }, [isDark, route.params.path]);
 
-  // useEffect(() => {
-  //   const PlayMusic = async () => {
-  //     await TrackPlayer.add({
-  //       url: route.path!,
-  //       title: metadata?.title,
-  //       artist: metadata?.artist,
-  //       album: metadata?.album,
-  //       artwork: metadata?.thumb,
-  //       duration: parseInt(metadata?.duration!, 10) / 1000,
-  //     });
+  useEffect(() => {
+    if (route.params.path && metadata) {
+      const PlayMusic = async () => {
+        await TrackPlayer.add([
+          {
+            url: `file://${route.params.path}`,
+            title: metadata?.title,
+            artist: metadata?.artist,
+            album: metadata?.album,
+            artwork: metadata?.thumb,
+            duration: parseInt(metadata?.duration!, 10) / 1000,
+          },
+        ]);
+        dispatch(playMusic());
+        await TrackPlayer.play();
+      };
 
-  //     const state = await TrackPlayer.getState();
-  //     setPlayState(state === State.Playing);
-  //   };
-
-  //   PlayMusic();
-  // }, [metadata, route.path]);
+      PlayMusic();
+    }
+  }, [metadata, route.params.path]);
 
   return (
     <View style={{backgroundColor: background}}>
-      <View style={styles.metadataContainer}>
-        <Image
-          style={styles.albumCover}
-          source={{uri: `data:image/png;base64,${metadata?.thumb}`}}
-        />
-        <View style={styles.titleContainer}>
-          <TextTicker
-            numberOfLines={1}
-            scrollSpeed={50}
-            loop
-            bounce
-            style={{color: colors.text, ...styles.artistFontSize}}>
-            {metadata ? metadata.artist : 'Blabla'}
-          </TextTicker>
-          <TextTicker
-            numberOfLines={1}
-            scrollSpeed={50}
-            loop
-            bounce
-            style={{color: colors.text, ...styles.titleFontSize}}>
-            {metadata ? metadata.title : '블라블라'}
-          </TextTicker>
-        </View>
-        <View>
-          <Slider
-            style={styles.slider}
-            minimumValue={0}
-            maximumValue={
-              metadata ? parseInt(metadata?.duration as string, 10) : 1000
-            }
-            minimumTrackTintColor={'#FFFFFF'}
-            maximumTrackTintColor={'#FFFFFF'}
-            thumbTintColor={'#FFFFFF'}
-            value={100}
+      <ImageBackground
+        source={{uri: `data:image/png;base64,${metadata?.thumb}`}}
+        resizeMode="cover"
+        blurRadius={100}>
+        <View style={styles.metadataContainer}>
+          <Image
+            style={styles.albumCover}
+            source={{uri: `data:image/png;base64,${metadata?.thumb}`}}
           />
-        </View>
-        <View style={styles.btnContainer}>
-          <Icon name="skip-previous" size={50} color="#FFFFFF" />
-          {/* {playState ? (
-            <Icon
-              name="pause"
-              size={70}
-              color="#FFFFFF"
-              onPress={() => TrackPlayer.stop()}
+          <View style={styles.titleContainer}>
+            <TextTicker
+              numberOfLines={1}
+              scrollSpeed={50}
+              loop
+              bounce
+              style={{color: colors.text, ...styles.artistFontSize}}>
+              {metadata ? metadata.artist : 'Blabla'}
+            </TextTicker>
+            <TextTicker
+              numberOfLines={1}
+              scrollSpeed={50}
+              loop
+              bounce
+              style={{color: colors.text, ...styles.titleFontSize}}>
+              {metadata ? metadata.title : '블라블라'}
+            </TextTicker>
+          </View>
+          <View>
+            <Slider
+              style={styles.slider}
+              minimumValue={0}
+              maximumValue={duration ? duration : 1000}
+              minimumTrackTintColor={'#FFFFFF'}
+              maximumTrackTintColor={'#FFFFFF'}
+              thumbTintColor={'#FFFFFF'}
+              value={position}
             />
-          ) : (
-            <Icon
-              name="play-arrow"
-              size={70}
-              color="#FFFFFF"
-              onPress={() => TrackPlayer.play()}
-            />
-          )} */}
-          <Icon name="skip-next" size={50} color="#FFFFFF" />
+          </View>
+          <View style={styles.btnContainer}>
+            <Icon name="skip-previous" size={40} color="#FFFFFF" />
+            {reduxState.reducer.isPlaying ? (
+              <Icon
+                name="pause"
+                size={70}
+                color="#FFFFFF"
+                onPress={() => {
+                  TrackPlayer.pause().then(() => {
+                    dispatch(stopMusic());
+                  });
+                }}
+              />
+            ) : (
+              <Icon
+                name="play-arrow"
+                size={70}
+                color="#FFFFFF"
+                onPress={() =>
+                  TrackPlayer.play().then(() => {
+                    dispatch(playMusic());
+                  })
+                }
+              />
+            )}
+            <Icon name="skip-next" size={40} color="#FFFFFF" />
+          </View>
         </View>
-      </View>
+      </ImageBackground>
     </View>
   );
 };
@@ -162,6 +185,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: Dimensions.get('window').width * 0.6,
   },
+  backgroundImg: {},
 });
 
 export default MusicPlayer;

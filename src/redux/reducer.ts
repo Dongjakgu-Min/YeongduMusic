@@ -1,17 +1,33 @@
-import {createDirectory, deleteDirectory, restoreDirectory} from './action';
-import {CREATE_DIRECTORY, DELETE_DIRECTORY, RESTORE_DIRECTORY} from './types';
+import {
+  createDirectory,
+  deleteDirectory,
+  playMusic,
+  restoreDirectory,
+  stopMusic,
+} from './action';
+import {
+  CREATE_DIRECTORY,
+  DELETE_DIRECTORY,
+  PLAY_MUSIC,
+  RESTORE_DIRECTORY,
+  STOP_MUSIC,
+} from './types';
 
 type AppState = {
   directory: string[];
+  isPlaying: boolean;
 };
 
 type DirAction =
   | ReturnType<typeof createDirectory>
   | ReturnType<typeof deleteDirectory>
-  | ReturnType<typeof restoreDirectory>;
+  | ReturnType<typeof restoreDirectory>
+  | ReturnType<typeof playMusic>
+  | ReturnType<typeof stopMusic>;
 
 const initialState: AppState = {
   directory: [],
+  isPlaying: false,
 };
 
 export function reducer(state: AppState = initialState, action: DirAction) {
@@ -28,6 +44,9 @@ export function reducer(state: AppState = initialState, action: DirAction) {
       return {
         directory: action.payload,
       };
+    case STOP_MUSIC:
+    case PLAY_MUSIC:
+      return {directory: state.directory, isPlaying: action.payload};
     default:
       return state;
   }

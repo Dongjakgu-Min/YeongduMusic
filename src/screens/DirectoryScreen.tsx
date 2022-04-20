@@ -9,7 +9,7 @@ import {deleteDirectory} from '../redux/action';
 
 const DirectoryScreen = ({navigation}: DirectoryNavigationProp) => {
   const reduxState = useSelector(
-    (state: {reducer: {directory: string[]}}) => state,
+    (state: {reducer: {directory: string[]; isPlaying: boolean}}) => state,
   );
   const dispatch = useDispatch();
 
