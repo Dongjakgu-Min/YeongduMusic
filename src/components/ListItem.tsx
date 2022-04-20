@@ -4,6 +4,9 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {useTheme} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
 import {createDirectory} from '../redux/action';
+import {BSON} from 'realm';
+
+import realm from '../../db';
 
 const ListItem = ({
   filename,
@@ -29,12 +32,18 @@ const ListItem = ({
       [
         {
           text: '취소',
-          style: 'cancel'
+          style: 'cancel',
         },
         {
           text: '추가',
           onPress: () => {
             dispatch(createDirectory(path));
+            realm.write(() => {
+              realm.create('Directory', {
+                _id: new BSON.ObjectID(),
+                path,
+              });
+            });
           },
         },
       ],

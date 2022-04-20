@@ -93,11 +93,7 @@ const App = () => {
             name="MusicPlayer"
             component={MusicPlayer}
           />
-          <Stack.Screen
-            options={{headerShown: false}}
-            name="Directory"
-            component={Directory}
-          />
+          <Stack.Screen name="Directory" component={Directory} />
         </Stack.Navigator>
       </NavigationContainer>
     </StoreProvider>

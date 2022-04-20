@@ -21,6 +21,7 @@
     "react-native": "0.67.3",
     "react-native-fs": "^2.19.0",
     "react-native-gesture-handler": "^2.4.0",
+    "react-native-get-random-values": "^1.7.2",
     "react-native-image-colors": "^1.5.0",
     "react-native-media-meta": "^0.0.11",
     "react-native-mime-types": "^2.3.0",
@@ -32,6 +33,7 @@
     "react-native-track-player": "^2.1.2",
     "react-native-vector-icons": "^9.1.0",
     "react-redux": "^8.0.0",
+    "realm": "^10.16.0",
     "redux": "^4.1.2"
   },
   "devDependencies": {
