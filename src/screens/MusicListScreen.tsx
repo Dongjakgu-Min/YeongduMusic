@@ -5,11 +5,17 @@ import RNFS, {ReadDirItem} from 'react-native-fs';
 import ListItem from '../components/ListItem';
 
 import {MusicListNavigationProp} from '../../types/navigation';
+import {useSelector} from 'react-redux';
 
 const MusicListScreen = ({navigation}: MusicListNavigationProp) => {
   const [music, setMusic] = useState<ReadDirItem[]>([]);
 
+  const reduxState = useSelector(
+    (state: {reducer: {directory: string[]}}) => state,
+  );
+
   useEffect(() => {
+    console.log(reduxState);
     const findMusic = async (path: string) => {
       const dirs = await RNFS.readDir(path);
 
@@ -21,14 +27,7 @@ const MusicListScreen = ({navigation}: MusicListNavigationProp) => {
       });
 
       let directories = dirs.filter(res => {
-        return (
-          res.isDirectory() &&
-          ![
-            `${RNFS.ExternalStorageDirectoryPath}/Android`,
-            `${RNFS.ExternalStorageDirectoryPath}/logs`,
-            `${RNFS.ExternalStorageDirectoryPath}/data`,
-          ].includes(res.path)
-        );
+        return res.isDirectory();
       });
 
       for (let dir of directories) {
@@ -39,7 +38,10 @@ const MusicListScreen = ({navigation}: MusicListNavigationProp) => {
       return files;
     };
 
-    findMusic(RNFS.ExternalStorageDirectoryPath).then(res => setMusic(res));
+    for (let path of reduxState.reducer.directory) {
+      console.log(path);
+      findMusic(path).then(res => setMusic([...music, ...res]));
+    }
   }, []);
 
   return (
