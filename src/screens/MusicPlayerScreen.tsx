@@ -15,7 +15,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {MusicPlayerNavigationProp} from '../../types/navigation';
 import {Metadata} from '../../types/object';
 
-import TrackPlayer, {useProgress, Event} from 'react-native-track-player';
+import TrackPlayer, {useProgress, Event, State} from 'react-native-track-player';
 import TextTicker from 'react-native-text-ticker';
 import ImageColors from 'react-native-image-colors';
 import SoundPlayer from 'react-native-sound-player';
@@ -25,12 +25,22 @@ import {playMusic, stopMusic} from '../redux/action';
 const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
   const [metadata, setMetadata] = useState<Metadata>();
   const [background, setBackground] = useState<string>();
+  const [sliding, setSliding] = useState<boolean>(false);
   const {position, buffered, duration} = useProgress();
   const reduxState = useSelector(
     (state: {reducer: {directory: string[]; isPlaying: boolean}}) => state,
   );
   const dispatch = useDispatch();
   const {colors} = useTheme();
+
+  const onSlidingStart = () => {
+    setSliding(true);
+  };
+
+  const onSlidingEnd = async (percent: number) => {
+    await TrackPlayer.seekTo((percent / 100) * duration);
+    setSliding(false);
+  };
 
   const isDark = useColorScheme() === 'dark';
 
@@ -57,6 +67,10 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
   useEffect(() => {
     if (route.params.path && metadata) {
       const PlayMusic = async () => {
+        const state = await TrackPlayer.getState();
+        if (state === State.Playing) {
+          await TrackPlayer.reset();
+        }
         await TrackPlayer.add([
           {
             url: `file://${route.params.path}`,
@@ -113,6 +127,8 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
               maximumTrackTintColor={'#FFFFFF'}
               thumbTintColor={'#FFFFFF'}
               value={position}
+              onSlidingStart={() => onSlidingStart()}
+              onSlidingComplete={onSlidingEnd}
             />
           </View>
           <View style={styles.btnContainer}>
