@@ -42,10 +42,6 @@ const FileScreen = () => {
   }, [path]);
 
   const onPress = (data: ReadDirItem) => {
-    // const idx = path.length > 1 ? path.length - 2 : path.length - 1;
-
-    console.log(path);
-
     // 상위 디렉터리로 간다면 마지막 최근 디렉터리는 필요 없음
     if (data.name === '...') {
       setPath(path.slice(0, path.length - 1));

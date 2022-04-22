@@ -11,6 +11,7 @@ import MediaMeta from 'react-native-media-meta';
 import {useTheme} from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import CIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {MusicPlayerNavigationProp} from '../../types/navigation';
 import {Metadata} from '../../types/object';
@@ -26,7 +27,7 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
   const [metadata, setMetadata] = useState<Metadata>();
   const [background, setBackground] = useState<string>();
   const [sliding, setSliding] = useState<boolean>(false);
-  const {position, buffered, duration} = useProgress();
+  const {position, buffered, duration} = useProgress(250);
   const reduxState = useSelector(
     (state: {reducer: {directory: string[]; isPlaying: boolean}}) => state,
   );
@@ -38,7 +39,8 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
   };
 
   const onSlidingEnd = async (percent: number) => {
-    await TrackPlayer.seekTo((percent / 100) * duration);
+    console.log(percent);
+    await TrackPlayer.seekTo(percent);
     setSliding(false);
   };
 
@@ -67,10 +69,7 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
   useEffect(() => {
     if (route.params.path && metadata) {
       const PlayMusic = async () => {
-        const state = await TrackPlayer.getState();
-        if (state === State.Playing) {
-          await TrackPlayer.reset();
-        }
+        await TrackPlayer.reset();
         await TrackPlayer.add([
           {
             url: `file://${route.params.path}`,
@@ -122,7 +121,7 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
             <Slider
               style={styles.slider}
               minimumValue={0}
-              maximumValue={duration ? duration : 1000}
+              maximumValue={duration}
               minimumTrackTintColor={'#FFFFFF'}
               maximumTrackTintColor={'#FFFFFF'}
               thumbTintColor={'#FFFFFF'}
@@ -132,11 +131,12 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
             />
           </View>
           <View style={styles.btnContainer}>
-            <Icon name="skip-previous" size={40} color="#FFFFFF" />
+            <CIcon name="skip-backward" size={38} color="#FFFFFF" />
+            <Icon name="skip-previous" size={38} color="#FFFFFF" />
             {reduxState.reducer.isPlaying ? (
               <Icon
                 name="pause"
-                size={70}
+                size={38}
                 color="#FFFFFF"
                 onPress={() => {
                   TrackPlayer.pause().then(() => {
@@ -147,7 +147,7 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
             ) : (
               <Icon
                 name="play-arrow"
-                size={70}
+                size={38}
                 color="#FFFFFF"
                 onPress={() =>
                   TrackPlayer.play().then(() => {
@@ -156,7 +156,8 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
                 }
               />
             )}
-            <Icon name="skip-next" size={40} color="#FFFFFF" />
+            <Icon name="skip-next" size={38} color="#FFFFFF" />
+            <CIcon name="skip-forward" size={38} color="#FFFFFF" />
           </View>
         </View>
       </ImageBackground>
@@ -199,7 +200,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: Dimensions.get('window').width * 0.6,
+    width: Dimensions.get('window').width * 0.8,
   },
   backgroundImg: {},
 });
