@@ -17,7 +17,12 @@ import CIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {MusicPlayerNavigationProp} from '../../types/navigation';
 import {Metadata} from '../../types/object';
 
-import TrackPlayer, {useProgress, Event, State} from 'react-native-track-player';
+import TrackPlayer, {
+  useProgress,
+  Event,
+  State,
+  useTrackPlayerEvents,
+} from 'react-native-track-player';
 import TextTicker from 'react-native-text-ticker';
 import ImageColors from 'react-native-image-colors';
 import SoundPlayer from 'react-native-sound-player';
@@ -38,6 +43,8 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
   const onSlidingStart = () => {
     setSliding(true);
   };
+
+  const events = [Event.PlaybackState];
 
   const onSlidingEnd = async (percent: number) => {
     console.log(percent);
@@ -89,6 +96,14 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
     }
   }, [metadata, route.params.path]);
 
+  useTrackPlayerEvents(events, event => {
+    if (event.type === Event.PlaybackState) {
+      event.state === State.Playing
+        ? dispatch(playMusic())
+        : dispatch(stopMusic());
+    }
+  });
+
   return (
     <View style={{backgroundColor: background}}>
       <ImageBackground
@@ -96,10 +111,12 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
         resizeMode="cover"
         blurRadius={100}>
         <View style={styles.metadataContainer}>
-          <Image
-            style={styles.albumCover}
-            source={{uri: `data:image/png;base64,${metadata?.thumb}`}}
-          />
+          <View style={styles.albumCover}>
+            <Image
+              style={styles.albumCover}
+              source={{uri: `data:image/png;base64,${metadata?.thumb}`}}
+            />
+          </View>
           <View style={styles.titleContainer}>
             <TextTicker
               numberOfLines={1}
@@ -130,12 +147,12 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
               onSlidingComplete={onSlidingEnd}
             />
             <View style={styles.timeContainer}>
-              <Text>{`${Math.floor(position / 60)}:${
+              <Text style={styles.sliderFont}>{`${Math.floor(position / 60)}:${
                 Math.floor(position % 60) < 10
                   ? `0${Math.floor(position % 60)}`
                   : Math.floor(position % 60)
               }`}</Text>
-              <Text>{`${Math.floor(duration / 60)}:${
+              <Text style={styles.sliderFont}>{`${Math.floor(duration / 60)}:${
                 Math.floor(duration % 60) < 10
                   ? `0${Math.floor(duration % 60)}`
                   : Math.floor(duration % 60)
@@ -150,22 +167,14 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
                 name="pause"
                 size={38}
                 color="#FFFFFF"
-                onPress={() => {
-                  TrackPlayer.pause().then(() => {
-                    dispatch(stopMusic());
-                  });
-                }}
+                onPress={() => TrackPlayer.pause()}
               />
             ) : (
               <Icon
                 name="play-arrow"
                 size={38}
                 color="#FFFFFF"
-                onPress={() =>
-                  TrackPlayer.play().then(() => {
-                    dispatch(playMusic());
-                  })
-                }
+                onPress={() => TrackPlayer.play()}
               />
             )}
             <Icon name="skip-next" size={38} color="#FFFFFF" />
@@ -194,6 +203,7 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').width * 0.8,
     alignContent: 'center',
     borderRadius: 5,
+    elevation: 5,
   },
   artistFontSize: {
     fontSize: 20,
@@ -203,9 +213,13 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontFamily: 'SpoqaHanSansNeo-Bold',
   },
+  sliderFont: {
+    fontSize: 12,
+    fontFamily: 'SpoqaHanSansNeo-Regular',
+  },
   sliderContainer: {
     width: Dimensions.get('window').width * 0.88,
-    height: Dimensions.get('window').height * 0.15,
+    height: Dimensions.get('window').height * 0.1,
     marginTop: Dimensions.get('window').height * 0.05,
   },
   btnContainer: {
