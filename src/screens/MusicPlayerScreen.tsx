@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Dimensions,
   useColorScheme,
+  Text,
 } from 'react-native';
 import MediaMeta from 'react-native-media-meta';
 import {useTheme} from '@react-navigation/native';
@@ -117,9 +118,8 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
               {metadata ? metadata.title : '블라블라'}
             </TextTicker>
           </View>
-          <View>
+          <View style={styles.sliderContainer}>
             <Slider
-              style={styles.slider}
               minimumValue={0}
               maximumValue={duration}
               minimumTrackTintColor={'#FFFFFF'}
@@ -129,6 +129,18 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
               onSlidingStart={() => onSlidingStart()}
               onSlidingComplete={onSlidingEnd}
             />
+            <View style={styles.timeContainer}>
+              <Text>{`${Math.floor(position / 60)}:${
+                Math.floor(position % 60) < 10
+                  ? `0${Math.floor(position % 60)}`
+                  : Math.floor(position % 60)
+              }`}</Text>
+              <Text>{`${Math.floor(duration / 60)}:${
+                Math.floor(duration % 60) < 10
+                  ? `0${Math.floor(duration % 60)}`
+                  : Math.floor(duration % 60)
+              }`}</Text>
+            </View>
           </View>
           <View style={styles.btnContainer}>
             <CIcon name="skip-backward" size={38} color="#FFFFFF" />
@@ -191,9 +203,10 @@ const styles = StyleSheet.create({
     fontSize: 40,
     fontFamily: 'SpoqaHanSansNeo-Bold',
   },
-  slider: {
+  sliderContainer: {
     width: Dimensions.get('window').width * 0.88,
     height: Dimensions.get('window').height * 0.15,
+    marginTop: Dimensions.get('window').height * 0.05,
   },
   btnContainer: {
     flex: 1,
@@ -203,6 +216,12 @@ const styles = StyleSheet.create({
     width: Dimensions.get('window').width * 0.8,
   },
   backgroundImg: {},
+  timeContainer: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    justifyContent: 'space-between',
+    width: Dimensions.get('window').width * 0.8,
+  },
 });
 
 export default MusicPlayer;
