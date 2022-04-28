@@ -24,9 +24,9 @@ import store from './src/redux';
 import TrackPlayer, {Capability} from 'react-native-track-player';
 
 import {RootStackParamList} from './types/navigation';
-import Main from './src/screens/MainScreen';
-import MusicPlayer from './src/screens/MusicPlayerScreen';
-import Directory from './src/screens/DirectoryScreen';
+import Main from './src/screens/Main';
+import MusicPlayer from './src/screens/MusicPlayer';
+import Directory from './src/screens/Directory';
 
 const audioSetup = async () => {
   const currentTrack = await TrackPlayer.getCurrentTrack();
