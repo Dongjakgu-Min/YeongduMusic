@@ -21,8 +21,12 @@ export const restoreDirectory = (paths: string[]) => {
   return {type: RESTORE_DIRECTORY, payload: paths};
 };
 
-export const addNetwork = (nickname: string, path: string) => {
-  return {type: ADD_NETWORK, payload: {nickname, path}};
+export const addNetwork = (
+  nickname: string,
+  path: string,
+  password: string,
+) => {
+  return {type: ADD_NETWORK, payload: {nickname, path, password}};
 };
 
 export const removeNetwork = (nickname: string) => {
@@ -33,6 +37,7 @@ export const restoreNetwork = (
   networks: {
     nickname: string;
     path: string;
+    password: string;
   }[],
 ) => {
   return {type: RESTORE_NETWORK, payload: networks};

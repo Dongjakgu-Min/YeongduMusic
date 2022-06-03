@@ -1,59 +1,53 @@
-import React from 'react';
-import {View, Alert} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useState } from 'react';
+import { View, Button } from 'react-native';
+import { FlatList, TextInput } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
+import { createClient } from 'webdav';
 import realm from '../../db';
-import {DirectoryNavigationProp} from '../../types/navigation';
+import { DirectoryNavigationProp } from '../../types/navigation';
 import ListItem from '../components/ListItem';
-import {deleteDirectory} from '../redux/action';
+import { deleteDirectory } from '../redux/action';
 
-const DirectoryScreen = ({navigation}: DirectoryNavigationProp) => {
+const AddNetworkScreen = ({ navigation }: DirectoryNavigationProp) => {
   const reduxState = useSelector(
-    (state: {reducer: {directory: string[]; isPlaying: boolean}}) => state,
+    (state: { reducer: { directory: string[]; isPlaying: boolean } }) => state,
   );
   const dispatch = useDispatch();
+  const [data, setData] = useState({ address: '', username: '', password: '' });
 
   return (
     <View>
-      <FlatList
-        data={reduxState.reducer.directory}
-        renderItem={({item}) => (
-          <ListItem
-            filename={item.split('/').pop() as string}
-            path={item}
-            isFile={() => {
-              return false;
-            }}
-            onPress={() => {
-              Alert.alert(
-                '디렉토리 제거',
-                '이 디렉토리를 음악 디렉토리에서 제거하시겠습니까?',
-                [
-                  {
-                    text: '취소',
-                    style: 'cancel',
-                  },
-                  {
-                    text: '제거',
-                    onPress: () => {
-                      dispatch(deleteDirectory(item));
-                      realm.write(() => {
-                        realm.delete(
-                          realm
-                            .objects('Directory')
-                            .filter((obj: any) => obj.path === item),
-                        );
-                      });
-                    },
-                  },
-                ],
-              );
-            }}
-          />
-        )}
+      <TextInput
+        onChangeText={str => setData({ ...data, address: str })}
+        placeholder={'Webdav 주소를 입력 해 주세요...'}
+        value={data.address}
+      />
+      <TextInput
+        onChangeText={str => setData({ ...data, address: str })}
+        placeholder={'Webdav 유저 이름을 입력 해 주세요...'}
+        value={data.address}
+      />
+      <TextInput
+        onChangeText={str => setData({ ...data, address: str })}
+        placeholder={'Webdav 비밀번호를 입력 해 주세요...'}
+        value={data.address}
+      />
+      <Button
+        title={'추가'}
+        onPress={() => {
+          const client = createClient(data.address, {
+            username: data.username,
+            password: data.password,
+          });
+
+          client
+            .getDirectoryContents('/')
+            .then(res => console.log(res))
+            .catch(err => console.log(`Connection Error : ${err.message}`));
+        }}
       />
     </View>
   );
 };
 
-export default DirectoryScreen;
+export default AddNetworkScreen;

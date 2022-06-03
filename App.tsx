@@ -27,6 +27,7 @@ import {RootStackParamList} from './types/navigation';
 import Main from './src/screens/Main';
 import MusicPlayer from './src/screens/MusicPlayer';
 import Directory from './src/screens/Directory';
+import AddNetworkScreen from './src/screens/AddNetwork';
 
 const audioSetup = async () => {
   const currentTrack = await TrackPlayer.getCurrentTrack();
@@ -94,6 +95,7 @@ const App = () => {
             component={MusicPlayer}
           />
           <Stack.Screen name="Directory" component={Directory} />
+          <Stack.Screen name="AddNetwork" component={AddNetworkScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </StoreProvider>

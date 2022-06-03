@@ -1,15 +1,15 @@
 import React from 'react';
-import {View, Alert} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
-import {useDispatch, useSelector} from 'react-redux';
+import { View, Alert } from 'react-native';
+import { FlatList } from 'react-native-gesture-handler';
+import { useDispatch, useSelector } from 'react-redux';
 import realm from '../../db';
-import {DirectoryNavigationProp} from '../../types/navigation';
+import { DirectoryNavigationProp } from '../../types/navigation';
 import ListItem from '../components/ListItem';
-import {deleteDirectory} from '../redux/action';
+import { deleteDirectory } from '../redux/action';
 
-const DirectoryScreen = ({navigation}: DirectoryNavigationProp) => {
+const DirectoryScreen = ({ navigation }: DirectoryNavigationProp) => {
   const reduxState = useSelector(
-    (state: {reducer: {directory: string[]; isPlaying: boolean}}) => state,
+    (state: { reducer: { directory: string[]; isPlaying: boolean } }) => state,
   );
   const dispatch = useDispatch();
 
@@ -17,7 +17,7 @@ const DirectoryScreen = ({navigation}: DirectoryNavigationProp) => {
     <View>
       <FlatList
         data={reduxState.reducer.directory}
-        renderItem={({item}) => (
+        renderItem={({ item }) => (
           <ListItem
             filename={item.split('/').pop() as string}
             path={item}

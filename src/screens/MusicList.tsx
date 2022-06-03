@@ -1,17 +1,17 @@
-import React, {useEffect, useState} from 'react';
-import {View, FlatList} from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList } from 'react-native';
 import * as mime from 'react-native-mime-types';
-import RNFS, {ReadDirItem} from 'react-native-fs';
+import RNFS, { ReadDirItem } from 'react-native-fs';
 import ListItem from '../components/ListItem';
 
-import {MusicListNavigationProp} from '../../types/navigation';
-import {useSelector} from 'react-redux';
+import { MusicListNavigationProp } from '../../types/navigation';
+import { useSelector } from 'react-redux';
 
-const MusicListScreen = ({navigation}: MusicListNavigationProp) => {
+const MusicListScreen = ({ navigation }: MusicListNavigationProp) => {
   const [music, setMusic] = useState<ReadDirItem[]>([]);
 
   const reduxState = useSelector(
-    (state: {reducer: {directory: string[]; isPlaying: boolean}}) => state,
+    (state: { reducer: { directory: string[]; isPlaying: boolean } }) => state,
   );
 
   useEffect(() => {
@@ -54,7 +54,7 @@ const MusicListScreen = ({navigation}: MusicListNavigationProp) => {
             path={data.item.path}
             isFile={() => data.item.isFile()}
             onPress={() => {
-              navigation.navigate('MusicPlayer', {path: data.item.path});
+              navigation.navigate('MusicPlayer', { path: data.item.path });
             }}
           />
         )}

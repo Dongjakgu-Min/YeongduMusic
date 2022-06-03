@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Image,
@@ -9,13 +9,13 @@ import {
   Text,
 } from 'react-native';
 import MediaMeta from 'react-native-media-meta';
-import {useTheme} from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
 import Slider from '@react-native-community/slider';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import CIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {MusicPlayerNavigationProp} from '../../types/navigation';
-import {Metadata} from '../../types/object';
+import { MusicPlayerNavigationProp } from '../../types/navigation';
+import { Metadata } from '../../types/object';
 
 import TrackPlayer, {
   useProgress,
@@ -26,19 +26,19 @@ import TrackPlayer, {
 import TextTicker from 'react-native-text-ticker';
 import ImageColors from 'react-native-image-colors';
 import SoundPlayer from 'react-native-sound-player';
-import {useDispatch, useSelector} from 'react-redux';
-import {playMusic, stopMusic} from '../redux/action';
+import { useDispatch, useSelector } from 'react-redux';
+import { playMusic, stopMusic } from '../redux/action';
 
-const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
+const MusicPlayer = ({ route }: MusicPlayerNavigationProp) => {
   const [metadata, setMetadata] = useState<Metadata>();
   const [background, setBackground] = useState<string>();
   const [sliding, setSliding] = useState<boolean>(false);
-  const {position, buffered, duration} = useProgress(250);
+  const { position, buffered, duration } = useProgress(250);
   const reduxState = useSelector(
-    (state: {reducer: {directory: string[]; isPlaying: boolean}}) => state,
+    (state: { reducer: { directory: string[]; isPlaying: boolean } }) => state,
   );
   const dispatch = useDispatch();
-  const {colors} = useTheme();
+  const { colors } = useTheme();
 
   const onSlidingStart = () => {
     setSliding(true);
@@ -105,16 +105,16 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
   });
 
   return (
-    <View style={{backgroundColor: background}}>
+    <View style={{ backgroundColor: background }}>
       <ImageBackground
-        source={{uri: `data:image/png;base64,${metadata?.thumb}`}}
+        source={{ uri: `data:image/png;base64,${metadata?.thumb}` }}
         resizeMode="cover"
         blurRadius={100}>
         <View style={styles.metadataContainer}>
           <View style={styles.albumCover}>
             <Image
               style={styles.albumCover}
-              source={{uri: `data:image/png;base64,${metadata?.thumb}`}}
+              source={{ uri: `data:image/png;base64,${metadata?.thumb}` }}
             />
           </View>
           <View style={styles.titleContainer}>
@@ -123,7 +123,7 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
               scrollSpeed={50}
               loop
               bounce
-              style={{color: colors.text, ...styles.artistFontSize}}>
+              style={{ color: colors.text, ...styles.artistFontSize }}>
               {metadata ? metadata.artist : 'Blabla'}
             </TextTicker>
             <TextTicker
@@ -131,7 +131,7 @@ const MusicPlayer = ({route}: MusicPlayerNavigationProp) => {
               scrollSpeed={50}
               loop
               bounce
-              style={{color: colors.text, ...styles.titleFontSize}}>
+              style={{ color: colors.text, ...styles.titleFontSize }}>
               {metadata ? metadata.title : '블라블라'}
             </TextTicker>
           </View>

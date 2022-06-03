@@ -1,6 +1,6 @@
 import React from 'react';
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-import {SettingNavigationProp} from '../../types/navigation';
+import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { SettingNavigationProp } from '../../types/navigation';
 
 const styles = StyleSheet.create({
   item: {
@@ -10,7 +10,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const SettingScreen = ({navigation}: SettingNavigationProp) => {
+const SettingScreen = ({ navigation }: SettingNavigationProp) => {
   return (
     <View>
       <TouchableOpacity

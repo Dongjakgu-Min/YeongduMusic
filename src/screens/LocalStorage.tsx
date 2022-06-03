@@ -1,9 +1,9 @@
-import React, {useEffect, useState} from 'react';
-import {View, FlatList} from 'react-native';
-import RNFS, {ReadDirItem} from 'react-native-fs';
+import React, { useEffect, useState } from 'react';
+import { View, FlatList } from 'react-native';
+import RNFS, { ReadDirItem } from 'react-native-fs';
 
 import ListItem from '../components/ListItem';
-import {readDir} from '../util/file';
+import { readDir } from '../util/file';
 
 const FileScreen = () => {
   const [dirPath, setDirPath] = useState<ReadDirItem[]>([]);
@@ -46,7 +46,7 @@ const FileScreen = () => {
     if (data.name === '...') {
       setPath(path.slice(0, path.length - 1));
     } else if (data.isDirectory()) {
-      setPath([...path, {...data, name: '...'}]);
+      setPath([...path, { ...data, name: '...' }]);
     }
   };
 

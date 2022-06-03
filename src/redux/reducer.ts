@@ -22,6 +22,7 @@ import {
 type Network = {
   nickname: string;
   path: string;
+  password: string;
 };
 
 type AppState = {
